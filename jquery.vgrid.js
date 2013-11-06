@@ -268,7 +268,13 @@
 						$c.css('display', 'none');
 						$c.stop().css({opacity: 0});
 						setTimeout(function() {
-							$c.stop().fadeTo($prop.time || 250, 1);
+							if ($.support.transition) {
+								$c.transition({
+									opacity: 1
+								}, $prop.time || 250).show();
+							} else {
+								$c.stop().fadeTo($prop.time || 250, 1);
+							}
 						}, i * ($prop.delay || 0));
 					});
 				}
