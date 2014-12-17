@@ -231,16 +231,14 @@
 	$.fn.extend({
 		vgrid: function(option) {
 			var $target = $(this);
-			var opt = $.extend({
-				time: 500,
-				delay: 0,
-				easing: 'linear',
-				autoResize: true
-			}, option);
-			if (opt.easeing) {
-				opt.easing = opt.easeing;
-			}
 			$target.each(function() {
+				var opt = $.extend({
+					time: 500,
+					delay: 0,
+					easing: 'linear',
+					autoResize: true
+				}, option);
+
 				var $self = $(this);
 				var $child = $self.find('> *');
 				$self.data('_vgopt', opt);
@@ -265,18 +263,21 @@
 
 					$child.each(function(i) {
 						var $c = $(this);
-						$c.css('display', 'none');
-						$c.stop().css({opacity: 0});
+						$c.css({
+							opacity: 0
+						}).show().stop();
 						setTimeout(function() {
 							if ($.support.transition) {
-								$c.transition({
+								$c.show().transition({
 									opacity: 1
-								}, $prop.time || 250).show();
+								}, $prop.time || 250);
 							} else {
 								$c.stop().fadeTo($prop.time || 250, 1);
 							}
 						}, i * ($prop.delay || 0));
 					});
+				} else {
+					$child.show();
 				}
 				$(window).resize(function(e) {
 					if (opt.autoResize !== true) {
@@ -344,6 +345,26 @@
 		vgheight: function() {
 			var $target = $(this);
 			return $target.data('_vgwrapheight');
+		},
+		vgoption: function() {
+			var option = {};
+			if ($.isPlainObject(arguments[0])) {
+				option = arguments[0];
+			} else {
+				option[arguments[0]] = arguments[1];
+			}
+
+			var $target = $(this);
+			$target.each(function() {
+				var $self = $(this);
+				var data = $self.data('_vgopt');
+				if (data == null) {
+					return;
+				}
+
+				data = $.extend(data, option);
+				$self.data('_vgopt', data);
+			});
 		}
 	});
 })(jQuery);
